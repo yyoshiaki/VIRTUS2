@@ -98,6 +98,11 @@ git clone https://github.com/yyoshiaki/VIRTUS2
 
 You can add `./VIRTUS2/bin` to `PATH` in `.zshrc` or `.bashrc` etc. 
 
+## Usage
+
+1. [create indices](#create-indices)
+2. run [VIRTUS2](#virtuspecwl)
+
 ## Tools
 
 ### Create indices
