@@ -149,17 +149,18 @@ for index, item in df.iterrows():
             print(prefetch_cmd,"\n")    
             subprocess.run(prefetch_cmd, shell = True)
 
+            print(fasterq_cmd,"\n")
+            subprocess.run(fasterq_cmd, shell = True)
+
             pigz_cmd = "pigz *.fastq "
             print(pigz_cmd, "\n")
             subprocess.run(pigz_cmd, shell = True)
 
-            print(fasterq_cmd,"\n")
-            subprocess.run(fasterq_cmd, shell = True)
-            if item["Layout"] == "PE":
-                os.rename(sample_index + ".sra_1.fastq.gz", fastq1)
-                os.rename(sample_index + ".sra_2.fastq.gz", fastq2)
-            elif item["Layout"] == "SE":
-                os.rename(sample_index + ".sra.fastq", fastq)
+            # if item["Layout"] == "PE":
+            #     os.rename(sample_index + ".sra_1.fastq.gz", fastq1)
+            #     os.rename(sample_index + ".sra_2.fastq.gz", fastq2)
+            # elif item["Layout"] == "SE":
+            #     os.rename(sample_index + ".sra.fastq", fastq)
             
 
     print(VIRTUS_cmd,"\n")
@@ -167,11 +168,6 @@ for index, item in df.iterrows():
     if not os.path.exists('VIRTUS.output.txt'):
         subprocess.run(VIRTUS_cmd, shell = True)
         
-    if args.fastq == False:
-        for i in input_list:
-            pigz_cmd = " ".join(["pigz", i])
-            print(pigz_cmd, "\n")
-            subprocess.run(pigz_cmd, shell = True)
             
     df_virus = pd.read_table("VIRTUS.output.txt".format(name), index_col = 0)
     series_virus = df_virus.loc[:,"rate_hit"]
