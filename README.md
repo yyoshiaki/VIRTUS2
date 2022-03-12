@@ -30,9 +30,17 @@ This software is freely available for academic users. Usage for commercial purpo
 To focus on virus-wide exploration, we changed several functions from VIRTUS1.
 
 - removed the single virus mode
-- 
+- added coverage on the viral genome and quality information on the results.
+- removed the default filter for low hit viruses.
 
-## Tutorial
+## Tutorials
+
+- [Install](#install)
+- [Tools](#tools)
+- [Tips](#tips)
+- [VIRTUS2 for single cell RNAseq](#virtus2-for-single-cell-rnaseq)
+
+## Install
 
 ### dependencies
 
@@ -106,12 +114,12 @@ Fetch reference data and create indexes for VIRTUS2. Located in `VIRTUS2/workflo
 
 ```
 usage: ./createindex.cwl [-h] --url_virus URL_VIRUS \ 
---output_name_virus OUTPUT_NAME_VIRUS \
-[--runThreadN RUNTHREADN] \
---dir_name_STAR_virus DIR_NAME_STAR_VIRUS \
---url_genomefasta_human URL_GENOMEFASTA_HUMAN \
---output_name_genomefasta_human OUTPUT_NAME_GENOMEFASTA_HUMAN \ 
---dir_name_STAR_human DIR_NAME_STAR_HUMAN \
+                              --output_name_virus OUTPUT_NAME_VIRUS \
+                              [--runThreadN RUNTHREADN] \
+                              --dir_name_STAR_virus DIR_NAME_STAR_VIRUS \
+                              --url_genomefasta_human URL_GENOMEFASTA_HUMAN \
+                              --output_name_genomefasta_human OUTPUT_NAME_GENOMEFASTA_HUMAN \ 
+                              --dir_name_STAR_human DIR_NAME_STAR_HUMAN \
 [job_order]
 
 VIRTUS v2.0
@@ -136,21 +144,25 @@ optional arguments:
 
 virus fasta is from [VirTect](https://github.com/WGLab/VirTect).
 
+![img/createindex.png](https://github.com/yyoshiaki/VIRTUS2/raw/master/img/createindex.png)
+
 ### VIRTUS.PE.cwl
 
 The main VIRTUS pipeline for paired-end RNA-seq. Located in `VIRTUS2/workflow`.
 
 ```
-usage: ./VIRTUS.PE.cwl [-h] --fastq2 FASTQ2 --fastq1 FASTQ1 
-                        --genomeDir_human GENOMEDIR_HUMAN
-                        [--outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN]
-                        [--nthreads NTHREADS] 
-                        --genomeDir_virus GENOMEDIR_VIRUS 
-                        --salmon_index_human SALMON_INDEX_HUMAN
-                        --salmon_quantdir_human SALMON_QUANTDIR_HUMAN
-                        [--hit_cutoff HIT_CUTOFF]
-                        [--kz_threshold KZ_THRESHOLD]
-                        [job_order]
+usage: ./VIRTUS.PE.cwl [-h] \
+                        --fastq2 FASTQ2 \
+                        --fastq1 FASTQ1 \
+                        --genomeDir_human \
+                        GENOMEDIR_HUMAN \
+                        [--outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN] \
+                        [--nthreads NTHREADS] \
+                        --genomeDir_virus GENOMEDIR_VIRUS \
+                        [--kz_threshold KZ_THRESHOLD] \
+                        [--filename_output FILENAME_OUTPUT] [job_order]
+
+VIRTUS v2.0
 
 positional arguments:
   job_order             Job input json file
@@ -163,11 +175,13 @@ optional arguments:
   --outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN
   --nthreads NTHREADS
   --genomeDir_virus GENOMEDIR_VIRUS
-  --salmon_quantdir_human SALMON_QUANTDIR_HUMAN
-  --salmon_index_human SALMON_INDEX_HUMAN
-  --hit_cutoff HIT_CUTOFF default : 400.
-  --kz_threshold KZ_THRESHOLD default : 0.1.
+  --kz_threshold KZ_THRESHOLD
+                        default : 0.1
+  --filename_output FILENAME_OUTPUT
+                        default : VIRTUS.output.tsv
 ```
+
+kz_threshold is the parameter for the filteration of low complexity sequences. refer to [https://github.com/eclarke/komplexity](https://github.com/eclarke/komplexity) for the detail.
 
 example1
 
@@ -189,48 +203,58 @@ example2
 
 #### Output
 
-`virus.counts.final.tsv` is the main output. The default threashold of the hit reads for each virus is set to 400 empirically. The example of `virus.counts.final.tsv` is like below.
+ The example of the output is like below.
 
-|virus|hit reads|ratio hit reads / read mapped on human genome|
-|--|--|--|
-|NC_007605.1_Human_herpesvirus_4_complete_wild_type_genome|9813|0.00132130136267871|
-|NC_009334.1_Human_herpesvirus_4,_complete_genome|2025|0.0002726623111611523|
-|NC_001716.2_Human_herpesvirus_7,_complete_genome|412|5.5474998616491234e-05|
+|virus|startpos|endpos|numreads|covbases|coverage|meandepth|meanbaseq|meanmapq|rate_hit|
+|--|--|--|--|--|--|--|--|--|--|
+|NC_007605.1_Human_herpesvirus_4_complete_wild_type_genome|1|171823|3545.5|31323|18.2298|4.0882|38.8|194.0|0.0005228124196814582|
+|NC_009334.1_Human_herpesvirus_4,_complete_genome|1|172764|278.5|8872|5.135330000000001|0.319227|38.9|2.95|4.1067059337550734e-05|
+|NC_003977.1_Hepatitis_B_virus,_complete_genome|1|3215|19.0|187|5.81649|0.888336|40.1|255.0|2.8017024323643226e-06|
+|NC_001716.2_Human_herpesvirus_7,_complete_genome|1|153080|2.0|317|0.207081|0.00228639|32.0|1.5|2.9491604551203395e-07|
+|NC_001669.1_Simian_virus_40,_complete_genome|1|5243|2.0|234|4.46309|0.07171469999999999|37.3|255.0|2.9491604551203395e-07|
+|NC_001348.1_Human_herpesvirus_3,_complete_genome|1|124884|1.0|79|0.0632587|0.00126517|38.6|255.0|1.4745802275601698e-07|
+|NC_001819.1_Rauscher_murine_leukemia_virus,_complete_genome|1|8282|1.0|118|1.42478|0.024028|40.3|3.0|1.4745802275601698e-07|
+|NC_006998.1_Vaccinia_virus,_complete_genome|1|194711|1.0|72|0.0369779|0.0007395580000000001|34.9|255.0|1.4745802275601698e-07|
+|NC_001806.1_Human_herpesvirus_1,_complete_genome|1|152261|1.0|50|0.0328383|0.0006567669999999999|39.0|255.0|1.4745802275601698e-07|
 
-`salmon_human` directory contains the output from salmon. You can manipurate the results using `tximport` or `tximeta` which are cool R libraries.
+Most columns are correspinding to the output of [samtools-coverage](http://www.htslib.org/doc/samtools-coverage.html) with following modifications.
 
-![img/VIRTUS.PE.jpg](https://github.com/yyoshiaki/VIRTUS2/raw/master/img/VIRTUS.PE.png)
+- numreads : mapped reads on each virus (in PE results, diveded by 2).
+- ratio hit : reads mapped on viral genome / read mapped on human genome
+
+#### Tool overview
+
+![img/VIRTUS.PE.png](https://github.com/yyoshiaki/VIRTUS2/raw/master/img/VIRTUS.PE.png)
 
 ### VIRTUS.SE.cwl
 
 The main VIRTUS pipeline for single-end RNA-seq. Located in `VIRTUS/workflow`.
 
 ```
-usage: ./VIRTUS.SE.cwl [-h] --fastq FASTQ 
-                        --genomeDir_human GENOMEDIR_HUMAN
-                        [--outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN]
-                        [--nthreads NTHREADS] 
-                        --genomeDir_virus GENOMEDIR_VIRUS 
-                        --salmon_index_human SALMON_INDEX_HUMAN
-                        --salmon_quantdir_human SALMON_QUANTDIR_HUMAN
-                        [--hit_cutoff HIT_CUTOFF]
-                        [--kz_threshold KZ_THRESHOLD]
-                        [job_order]
+usage: ./VIRTUS.SE.cwl [-h] \
+                        --genomeDir_human GENOMEDIR_HUMAN \
+                        [--outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN] \
+                        [--nthreads NTHREADS] \
+                        --fastq FASTQ \
+                        --genomeDir_virus GENOMEDIR_VIRUS \
+                        [--kz_threshold KZ_THRESHOLD] [--filename_output FILENAME_OUTPUT] [job_order]
+
+VIRTUS v2.0
 
 positional arguments:
   job_order             Job input json file
 
 optional arguments:
   -h, --help            show this help message and exit
-  --fastq FASTQ
   --genomeDir_human GENOMEDIR_HUMAN
   --outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN
   --nthreads NTHREADS
+  --fastq FASTQ
   --genomeDir_virus GENOMEDIR_VIRUS
-  --salmon_quantdir_human SALMON_QUANTDIR_HUMAN
-  --salmon_index_human SALMON_INDEX_HUMAN
-  --hit_cutoff HIT_CUTOFF
-  --kz_threshold KZ_THRESHOLD default : 0.1.
+  --kz_threshold KZ_THRESHOLD
+                        default : 0.1
+  --filename_output FILENAME_OUTPUT
+                        default : VIRTUS.output.tsv
 ```
 
 example1
@@ -246,12 +270,11 @@ example2
 --fastq ../test/SRR8315715_2.fastq.gz \
 --genomeDir_human ../test/STAR_index_human \
 --genomeDir_virus ../test/STAR_index_virus \
---salmon_index_human ../test/salmon_index_human \
---salmon_quantdir_human salmon_human \
 --outFileNamePrefix_human human \
 --nthreads 40
 ```
 
+![img/VIRTUS.SE.png](https://github.com/yyoshiaki/VIRTUS2/raw/master/img/VIRTUS.SE.png)
 
 ### Wrapper for multiple analysis
 
@@ -396,7 +419,7 @@ cwltool --tmp-outdir-prefix=/home/yyasumizu/tmp_cwl/ \
 
 ### virus detection for 10x or Dropseq
 
-10x and Dropseq use paired-end sequences. The second fastq file contains only transcript's sequences. We recommend users first to run `VIRTUS.SE.cwl` for the second reads　as a screening. For detected viruses, users can quantify in several ways; 1) [cellrenger with a modified reference](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/tutorial_mr), 2) run [STAR solo](https://github.com/alexdobin/STAR/blob/master/docs/STARsolo.md#barcode-and-cdna-on-the-same-mate) with a custom reference, 3) run alevin for the detected virus. `createindex_singlevirus.cwl` can be used for building the index for [Alevin](https://salmon.readthedocs.io/en/latest/alevin.html). For example, the Dropseq's output from SRR8315715 can be screened like the command below.
+10x and Dropseq use paired-end sequences. The second fastq file contains only transcript's sequences. We recommend users first to run `VIRTUS.SE.cwl` for the second reads　as a virome-wide screening. For detected viruses, users can quantify in several ways; 1) [cellrenger with a modified reference](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/tutorial_mr), 2) run [STAR solo](https://github.com/alexdobin/STAR/blob/master/docs/STARsolo.md#barcode-and-cdna-on-the-same-mate) with a custom reference, 3) run alevin for the detected virus. `createindex_singlevirus.cwl` can be used for building the index for [Alevin](https://salmon.readthedocs.io/en/latest/alevin.html). For example, the Dropseq's output from SRR8315715 can be screened like the command below.
 
 ```
 ./VIRTUS.SE.cwl \
@@ -411,5 +434,5 @@ cwltool --tmp-outdir-prefix=/home/yyasumizu/tmp_cwl/ \
 
 ### virus detection for SmartSeq2
 
-Just use `VIRTUS.PE.cwl` on each cell individually. When the number of reads is insufficient, VIRTUS may not detect viruses. The default threashold of the hit reads is 400. You can adjust the value in `tool/mk_virus_count.cwl`.
+Just use `VIRTUS.PE.cwl` on each cell individually. When the number of reads is insufficient, VIRTUS may not detect viruses.
 
