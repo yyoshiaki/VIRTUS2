@@ -222,6 +222,8 @@ Most columns are correspinding to the output of [samtools-coverage](http://www.h
 - numreads : mapped reads on each virus (in PE results, diveded by 2).
 - ratio hit : reads mapped on viral genome / read mapped on human genome
 
+Unmapped viruses are removed from the output.
+
 #### Tool overview
 
 ![img/VIRTUS.PE.png](https://github.com/yyoshiaki/VIRTUS2/raw/master/img/VIRTUS.PE.png)
@@ -280,7 +282,7 @@ example2
 
 THe wrapper script is deposited in `VIRTUS2/wrapper`.
 
-VIRTUS2 has a great wrapper for multiple samples. The input is a comma-separated text file or CSV file. The first column is arbitral sample names, the second is SRR id, or fastq files (when you specify `--fastq` option). Note that `--fastq` requires the suffix removed file names. Refer to the documentation in more detail.  The third column is the sequence layout (SE or PE), and the Fourth is groups. Let's create an example csv file (or [download it](https://raw.githubusercontent.com/yyoshiaki/VIRTUS2/master/wrapper/input.csv)).
+VIRTUS2 has a wrapper for multiple samples. The input is a comma-separated text file or CSV file. The first column is arbitral sample names, the second is SRR id, or fastq files (when you specify `--fastq` option). Note that `--fastq` requires the suffix removed file names. Refer to the documentation in more detail.  The third column is the sequence layout (SE or PE), and the Fourth is groups. Let's create an example csv file (or [download it](https://raw.githubusercontent.com/yyoshiaki/VIRTUS2/master/wrapper/input.csv)).
 
 input.csv
 ```
@@ -294,7 +296,7 @@ Ctrl_2,SRR9856915,PE,Mock
 Then, run this (edit DIR_INDEX_ROOT).
 
 ```
-DIR_INDEX_ROOT=/dir/to/indeices/created/
+DIR_INDEX_ROOT=/absolute/path/to/dir/of/indeices/created/
 VIRTUS_wrapper.py input.csv \
     --genomeDir_human $DIR_INDEX_ROOT/STAR_index_human \
     --genomeDir_virus $DIR_INDEX_ROOT/STAR_index_virus \

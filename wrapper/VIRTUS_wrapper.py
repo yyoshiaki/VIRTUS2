@@ -142,12 +142,16 @@ for index, item in df.iterrows():
 
     if args.fastq == False:
         if item["Layout"] =="PE":
-            is_exit_fq = os.path.exists(dir+'/'+fastq1)
+            is_exit_fq = os.path.exists(fastq1)
         else:
-            is_exit_fq = os.path.exists(dir+'/'+fastq)
+            is_exit_fq = os.path.exists(fastq)
         if not is_exit_fq:
             print(prefetch_cmd,"\n")    
             subprocess.run(prefetch_cmd, shell = True)
+
+            pigz_cmd = "pigz *.fastq "
+            print(pigz_cmd, "\n")
+            subprocess.run(pigz_cmd, shell = True)
 
             print(fasterq_cmd,"\n")
             subprocess.run(fasterq_cmd, shell = True)
@@ -157,9 +161,6 @@ for index, item in df.iterrows():
             elif item["Layout"] == "SE":
                 os.rename(sample_index + ".sra.fastq", fastq)
             
-            pigz_cmd = "pigz *.fastq "
-            print(pigz_cmd, "\n")
-            subprocess.run(pigz_cmd, shell = True)
 
     print(VIRTUS_cmd,"\n")
     os.chdir(name)
