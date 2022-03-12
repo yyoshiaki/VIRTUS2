@@ -1,1 +1,0 @@
-cwl files are cloned from [https://github.com/roryk/salmon-cwl](https://github.com/roryk/salmon-cwl)
