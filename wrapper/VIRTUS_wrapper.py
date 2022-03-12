@@ -49,14 +49,14 @@ except (ValueError, IndexError):
 
 # %%
 series_list = []
-clean_cmd = "rm -rf tmp"
 
 for index, item in df.iterrows():
     # parameter setting
     if args.fastq == True:
-        dir = os.path.dirname(item["SRR"])
+        name = item['Name']
+        # dir = os.path.dirname(item["SRR"])
         sample_index = os.path.basename(item["SRR"])
-        os.chdir(dir)
+        # os.chdir(dir)
         p_temp = pathlib.Path(".")
         files = [str(i) for i in list(p_temp.iterdir()) if i.is_file()]
         if item["Layout"] == "PE":
@@ -94,16 +94,17 @@ for index, item in df.iterrows():
         else:
             print("Layout Error")
     else:
+        name = item['Name']
         dir = item["SRR"]
         sample_index = item["SRR"]
         prefetch_cmd = " ".join(["prefetch",sample_index])
         fasterq_cmd = " ".join(["fasterq-dump", "--split-files", sample_index + ".sra", "-e","16"])
         if item["Layout"] == "PE":
-            fastq1 = sample_index + "_1.fastq"
-            fastq2 = sample_index + "_2.fastq"
+            fastq1 = sample_index + "_1.fastq.gz"
+            fastq2 = sample_index + "_2.fastq.gz"
             input_list = [fastq1,fastq2]
         elif item["Layout"] == "SE":
-            fastq = sample_index + ".fastq"
+            fastq = sample_index + ".fastq.gz"
             input_list = [fastq]
         else:
             print("Layout Error")
@@ -111,86 +112,71 @@ for index, item in df.iterrows():
     if item["Layout"] =="PE":
         VIRTUS_cmd = " ".join([
             "cwltool",
-            "--tmpdir-prefix tmp/",
-            "--tmp-outdir-prefix tmp/",
+            "--rm-tmpdir",
             os.path.join(dir_VIRTUS, "VIRTUS.PE.cwl"), 
-            "--fastq1", fastq1,
-            "--fastq2", fastq2, 
+            "--fastq1", '../'+fastq1,
+            "--fastq2", '../'+fastq2, 
             "--genomeDir_human", args.genomeDir_human, 
             "--genomeDir_virus", args.genomeDir_virus,
             "--outFileNamePrefix_human", args.outFileNamePrefix_human,
-            "--nthreads", args.nthreads
+            "--nthreads", args.nthreads,
+            "--filename_output", "VIRTUS.{}.txt".format(name)
         ])
     elif item["Layout"] =="SE":
         VIRTUS_cmd = " ".join([
             "cwltool",
-            "--tmpdir-prefix tmp/",
-            "--tmp-outdir-prefix tmp/",
+            "--rm-tmpdir",
             os.path.join(dir_VIRTUS, "VIRTUS.SE.cwl"), 
-            "--fastq", fastq,
+            "--fastq", '../'+fastq,
             "--genomeDir_human", args.genomeDir_human, 
             "--genomeDir_virus", args.genomeDir_virus,
             "--outFileNamePrefix_human", args.outFileNamePrefix_human,
-            "--nthreads", args.nthreads
+            "--nthreads", args.nthreads,
+            "--filename_output", "VIRTUS.{}.txt".format(name)
         ])
     else:
         print("Layout Error")
 
     # run
-    if args.fastq == False:
-        print(prefetch_cmd,"\n")
-        try:
-            p_prefetch = subprocess.Popen(prefetch_cmd, shell = True)
-            p_prefetch.wait()
-            os.chdir(dir)
-        except:
-            print("Download Error")
+    os.makedirs(name, exist_ok=True)
 
-        print(fasterq_cmd,"\n")
-        try:
-            p_fasterq = subprocess.Popen(fasterq_cmd, shell = True)
-            p_fasterq.wait()
+    if args.fastq == False:
+        if item["Layout"] =="PE":
+            is_exit_fq = os.path.exists(dir+'/'+fastq1)
+        else:
+            is_exit_fq = os.path.exists(dir+'/'+fastq)
+        if not is_exit_fq:
+            print(prefetch_cmd,"\n")    
+            subprocess.run(prefetch_cmd, shell = True)
+
+            print(fasterq_cmd,"\n")
+            subprocess.run(fasterq_cmd, shell = True)
             if item["Layout"] == "PE":
-                os.rename(sample_index + ".sra_1.fastq", fastq1)
-                os.rename(sample_index + ".sra_2.fastq", fastq2)
+                os.rename(sample_index + ".sra_1.fastq.gz", fastq1)
+                os.rename(sample_index + ".sra_2.fastq.gz", fastq2)
             elif item["Layout"] == "SE":
                 os.rename(sample_index + ".sra.fastq", fastq)
-        except:
-            print("fasterq error")
+            
+            pigz_cmd = "pigz *.fastq "
+            print(pigz_cmd, "\n")
+            subprocess.run(pigz_cmd, shell = True)
 
     print(VIRTUS_cmd,"\n")
-    try:
-        p_VIRTUS = subprocess.Popen(VIRTUS_cmd, shell = True)
-        p_VIRTUS.wait()
-    except:
-        print("VIRTUS error")
-
+    os.chdir(name)
+    subprocess.run(VIRTUS_cmd, shell = True)
+        
     if args.fastq == False:
-        try:
-            for i in input_list:
-                pigz_cmd = " ".join(["pigz", i])
-                print(pigz_cmd, "\n")
-                p_pigz = subprocess.Popen(pigz_cmd, shell = True)
-                p_pigz.wait()
-        except:
-            print("Compression Error")
+        for i in input_list:
+            pigz_cmd = " ".join(["pigz", i])
+            print(pigz_cmd, "\n")
+            subprocess.run(pigz_cmd, shell = True)
+            
+    df_virus = pd.read_table("VIRTUS.{}.txt".format(name), index_col = 0)
+    series_virus = df_virus.loc[:,"rate_hit"]
+    series_virus = series_virus.rename(item['Name'])
+    series_list.append(series_virus)
 
-    print(clean_cmd,"\n")
-    try:
-        p_clean = subprocess.Popen(clean_cmd,shell = True)
-        p_clean.wait()
-    except:
-        print("clean error")
-
-    try:
-        df_virus = pd.read_table("VIRTUS.output.tsv", index_col = 0)
-        series_virus = df_virus.loc[:,"rate_hit"]
-        series_virus = series_virus.rename(item['Name'])
-        series_list.append(series_virus)
-    except:
-        print("virus.counts.final.tsv not found")
-
-    os.chdir(first_dir)
+    os.chdir("..")
 
 # %% summary
 summary = pd.concat(series_list, axis = 1).fillna(0).T
