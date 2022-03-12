@@ -323,8 +323,8 @@ You can get this heatmap and `summary.csv` which contains the ratio of viral rea
 
 |  name  |  fastq |  Layout  | Group | ... |
 | ---- | ---- | - | - | - |
-|  Inf_1  | hoge/SRR9856913 | PE | infected | ...|
-|  Ctrl_1  |  hoge/SRR9856914  | PE  | Mock | ... |
+|  Inf_1  | SRR9856913 | PE | infected | ...|
+|  Ctrl_1  |  SRR9856914  | PE  | Mock | ... |
 
 - If you want to use your own fastq, add `---fastq` option. This wrapper supports only `.fastq` and `.fastq.gz`.
 

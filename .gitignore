@@ -2,6 +2,11 @@
 test/*
 !test/*.sh
 !test/*.yaml
-wrapper/SRR*
+wrapper/*
+!wrapper/run.sh
+!wrapper/run.fastq.sh
+!wrapper/input.csv
+!wrapper/input.fastq.csv
+!wrapper/VIRTUS_wrapper.py
 .vscode/settings.json
 ._.DS_Store

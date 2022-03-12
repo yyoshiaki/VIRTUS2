@@ -98,7 +98,7 @@ for index, item in df.iterrows():
         dir = item["SRR"]
         sample_index = item["SRR"]
         prefetch_cmd = " ".join(["prefetch",sample_index])
-        fasterq_cmd = " ".join(["fasterq-dump", "--split-files", sample_index + ".sra", "-e","16"])
+        fasterq_cmd = " ".join(["fasterq-dump", "--split-files", sample_index + '/' + sample_index + ".sra", "-e","16"])
         if item["Layout"] == "PE":
             fastq1 = sample_index + "_1.fastq.gz"
             fastq2 = sample_index + "_2.fastq.gz"
@@ -120,7 +120,7 @@ for index, item in df.iterrows():
             "--genomeDir_virus", args.genomeDir_virus,
             "--outFileNamePrefix_human", args.outFileNamePrefix_human,
             "--nthreads", args.nthreads,
-            "--filename_output", "VIRTUS.{}.txt".format(name)
+            "--filename_output", "VIRTUS.output.txt"
         ])
     elif item["Layout"] =="SE":
         VIRTUS_cmd = " ".join([
@@ -132,7 +132,7 @@ for index, item in df.iterrows():
             "--genomeDir_virus", args.genomeDir_virus,
             "--outFileNamePrefix_human", args.outFileNamePrefix_human,
             "--nthreads", args.nthreads,
-            "--filename_output", "VIRTUS.{}.txt".format(name)
+            "--filename_output", "VIRTUS.output.txt"
         ])
     else:
         print("Layout Error")
@@ -164,7 +164,8 @@ for index, item in df.iterrows():
 
     print(VIRTUS_cmd,"\n")
     os.chdir(name)
-    subprocess.run(VIRTUS_cmd, shell = True)
+    if not os.path.exists('VIRTUS.output.txt'):
+        subprocess.run(VIRTUS_cmd, shell = True)
         
     if args.fastq == False:
         for i in input_list:
@@ -172,7 +173,7 @@ for index, item in df.iterrows():
             print(pigz_cmd, "\n")
             subprocess.run(pigz_cmd, shell = True)
             
-    df_virus = pd.read_table("VIRTUS.{}.txt".format(name), index_col = 0)
+    df_virus = pd.read_table("VIRTUS.output.txt".format(name), index_col = 0)
     series_virus = df_virus.loc[:,"rate_hit"]
     series_virus = series_virus.rename(item['Name'])
     series_list.append(series_virus)
