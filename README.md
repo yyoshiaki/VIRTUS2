@@ -1,10 +1,10 @@
 # VIRTUS2 : VIRal Transcript Usage Sensor v2.0 <img src="https://github.com/yyoshiaki/VIRTUS/raw/master/img/VIRTUS.jpg" width="20%" align="right" />
 
-**Note : We updated VIRTUS to version2. In this version, we removed the gene quantification step by Salmon, and single virus mode to focus on virus-wide exploration.**
+**Note : We updated VIRTUS to version2. In this version, we removed the gene quantification step by Salmon and single virus mode, and added coverage on viral genomes to the result to focus on virus-wide exploration. If you want to use the single virus mode, visit [https://github.com/yyoshiaki/VIRTUS](https://github.com/yyoshiaki/VIRTUS)**
 
 Virus transcript detection and quantification using normal human RNAseq. VIRTUS is the first tool to detect viral transcripts considering their splicing event rather than the viral genome copy number. VIRTUS can be applied to both bulk RNAseq and single-cell RNAseq. The virus reference covers 762 viruses including SARS-CoV-2 (cause of COVID-19). The workflow is implemented by [Common Workflow Language](https://www.commonwl.org/) and [Rabix](https://rabix.io/). You can specify each parameter individually or give `yaml` or `json` file which describes all the parameter information. In detail, check [the CWL User Guide](http://www.commonwl.org/user_guide/) out. 
 
-![img](https://github.com/yyoshiaki/VIRTUS/raw/master/img/webimage.jpg)
+![img](https://github.com/yyoshiaki/VIRTUS2/raw/master/img/webimage.jpg)
 
 ## Contact
 
@@ -12,8 +12,7 @@ Yoshiaki Yasumizu ([yyasumizu@ifrec.osaka-u.ac.jp](yyasumizu@ifrec.osaka-u.ac.jp
 
 ## Citation
 
-VIRTUS: a pipeline for comprehensive virus analysis from conventional RNA-seq data
-Yasumizu, Yoshiaki, Atsushi Hara, Shimon Sakaguchi, and Naganari Ohkura. 2020. “OUP Accepted Manuscript.” Edited by Jan Gorodkin. *Bioinformatics*, October. https://doi.org/10.1093/bioinformatics/btaa859.
+Yoshiaki Yasumizu, Atsushi Hara, Shimon Sakaguchi, Naganari Ohkura, VIRTUS: a pipeline for comprehensive virus analysis from conventional RNA-seq data, *Bioinformatics*, Volume 37, Issue 10, 15 May 2021, Pages 1465–1467, [https://doi.org/10.1093/bioinformatics/btaa859](https://doi.org/10.1093/bioinformatics/btaa859)
 
 ## Acknowledgement
 
@@ -26,18 +25,58 @@ This software is freely available for academic users. Usage for commercial purpo
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a>
 
+## Update from [VIRTUS1](https://github.com/yyoshiaki/VIRTUS)
+
+To focus on virus-wide exploration, we changed several functions from VIRTUS1.
+
+- removed the single virus mode
+- 
+
 ## Tutorial
 
+### dependencies
 
-### Installation
+- python3
+- cwltool `pip install cwlref-runner` 
+- docker (alternatively, you can use udocker, singularity, or `--no-container` mode when you have no root privileges. See [Tips section](https://github.com/yyoshiaki/VIRTUS#tips).)
+- STAR requires about 37Gb RAM.
 
-1. Install cwltool and python packages.
+### VIRTUS2
 
-If you are not using python3, install python3 via anaconda or another way. Then, install these;
+1. install cwltool
 
 ```
-pip install cwlref-runner numpy pandas scipy statsmodels seaborn
+pip install cwlref-runner
 ```
+
+In detail, check out [the cwltool website](https://github.com/common-workflow-language/cwltool).
+
+2. Setup docker
+
+Setup [docker](https://www.docker.com/). If you are using Mac, increase the memory limit above 40Gb([Documentation](https://docs.docker.com/docker-for-mac/#resources)).
+
+3. Clone VIRTUS2.
+```
+git clone https://github.com/yyoshiaki/VIRTUS2
+```
+
+You can add `./VIRTUS/bin` to `PATH` in `.zshrc` or `.bashrc` etc.
+
+4. Version confirmation
+
+`Tool --help` will tell you the version. ex. `VIRTUS.PE.cwl --help`
+
+### VIRTUS wrapper
+
+VIRTUS wrapper uses Python3 and several packages. To manage python and packages, anaconda is useful.
+
+1. install Python packages
+
+```
+pip install numpy pandas scipy statsmodels seaborn
+```
+
+just it.
 
 2. Install Docker
 
@@ -49,8 +88,9 @@ Install docker (alternatively, you can use udocker when you have no root privile
 git clone https://github.com/yyoshiaki/VIRTUS2
 ```
 
-You can add `./VIRTUS/bin` to `PATH` in `.zshrc` or `.bashrc` etc. 
+You can add `./VIRTUS2/bin` to `PATH` in `.zshrc` or `.bashrc` etc. 
 
+## Tools
 
 ### Create indices
 
@@ -60,9 +100,164 @@ just run the code below. A set of indices will be created in your current direct
 createindex.cwl https://raw.githubusercontent.com/yyoshiaki/VIRTUS2/master/workflow/createindex.job.yaml
 ```
 
-### First run
+#### createindex.cwl (execute only once)
 
-VIRTUS has a great wrapper for multiple samples. The input is a comma-separated text file or CSV file. The first column is arbitral sample names, the second is SRR id, or fastq files (when you specify `--fastq` option). Note that `--fastq` requires the suffix removed file names. Refer to the documentation in more detail.  The third column is the sequence layout (SE or PE), and the Fourth is groups. Let's create an example csv file (or [download it](https://raw.githubusercontent.com/yyoshiaki/VIRTUS2/master/wrapper/input.csv)).
+Fetch reference data and create indexes for VIRTUS2. Located in `VIRTUS2/workflow`.
+
+```
+usage: ./createindex.cwl [-h] --url_virus URL_VIRUS \ 
+--output_name_virus OUTPUT_NAME_VIRUS \
+[--runThreadN RUNTHREADN] \
+--dir_name_STAR_virus DIR_NAME_STAR_VIRUS \
+--url_genomefasta_human URL_GENOMEFASTA_HUMAN \
+--output_name_genomefasta_human OUTPUT_NAME_GENOMEFASTA_HUMAN \ 
+--dir_name_STAR_human DIR_NAME_STAR_HUMAN \
+[job_order]
+
+VIRTUS v2.0
+
+positional arguments:
+  job_order             Job input json file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --url_virus URL_VIRUS
+  --output_name_virus OUTPUT_NAME_VIRUS
+  --runThreadN RUNTHREADN
+  --dir_name_STAR_virus DIR_NAME_STAR_VIRUS
+  --url_genomefasta_human URL_GENOMEFASTA_HUMAN
+  --output_name_genomefasta_human OUTPUT_NAME_GENOMEFASTA_HUMAN
+  --dir_name_STAR_human DIR_NAME_STAR_HUMAN
+```
+
+```
+./createindex.cwl createindex.job.yaml
+```
+
+virus fasta is from [VirTect](https://github.com/WGLab/VirTect).
+
+### VIRTUS.PE.cwl
+
+The main VIRTUS pipeline for paired-end RNA-seq. Located in `VIRTUS2/workflow`.
+
+```
+usage: ./VIRTUS.PE.cwl [-h] --fastq2 FASTQ2 --fastq1 FASTQ1 
+                        --genomeDir_human GENOMEDIR_HUMAN
+                        [--outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN]
+                        [--nthreads NTHREADS] 
+                        --genomeDir_virus GENOMEDIR_VIRUS 
+                        --salmon_index_human SALMON_INDEX_HUMAN
+                        --salmon_quantdir_human SALMON_QUANTDIR_HUMAN
+                        [--hit_cutoff HIT_CUTOFF]
+                        [--kz_threshold KZ_THRESHOLD]
+                        [job_order]
+
+positional arguments:
+  job_order             Job input json file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --fastq2 FASTQ2
+  --fastq1 FASTQ1
+  --genomeDir_human GENOMEDIR_HUMAN
+  --outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN
+  --nthreads NTHREADS
+  --genomeDir_virus GENOMEDIR_VIRUS
+  --salmon_quantdir_human SALMON_QUANTDIR_HUMAN
+  --salmon_index_human SALMON_INDEX_HUMAN
+  --hit_cutoff HIT_CUTOFF default : 400.
+  --kz_threshold KZ_THRESHOLD default : 0.1.
+```
+
+example1
+
+```
+./VIRTUS.PE.cwl VIRTUS.PE.job.yaml
+```
+
+example2
+
+```
+./VIRTUS.PE.cwl \
+--fastq1 ../test/ERR3240275/ERR3240275_1.fastq.gz \
+--fastq2 ../test/ERR3240275/ERR3240275_2.fastq.gz \
+--genomeDir_human ../test/STAR_index_human \
+--genomeDir_virus ../test/STAR_index_virus \
+--outFileNamePrefix_human human \
+--nthreads 40
+```
+
+#### Output
+
+`virus.counts.final.tsv` is the main output. The default threashold of the hit reads for each virus is set to 400 empirically. The example of `virus.counts.final.tsv` is like below.
+
+|virus|hit reads|ratio hit reads / read mapped on human genome|
+|--|--|--|
+|NC_007605.1_Human_herpesvirus_4_complete_wild_type_genome|9813|0.00132130136267871|
+|NC_009334.1_Human_herpesvirus_4,_complete_genome|2025|0.0002726623111611523|
+|NC_001716.2_Human_herpesvirus_7,_complete_genome|412|5.5474998616491234e-05|
+
+`salmon_human` directory contains the output from salmon. You can manipurate the results using `tximport` or `tximeta` which are cool R libraries.
+
+![img/VIRTUS.PE.jpg](https://github.com/yyoshiaki/VIRTUS2/raw/master/img/VIRTUS.PE.png)
+
+### VIRTUS.SE.cwl
+
+The main VIRTUS pipeline for single-end RNA-seq. Located in `VIRTUS/workflow`.
+
+```
+usage: ./VIRTUS.SE.cwl [-h] --fastq FASTQ 
+                        --genomeDir_human GENOMEDIR_HUMAN
+                        [--outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN]
+                        [--nthreads NTHREADS] 
+                        --genomeDir_virus GENOMEDIR_VIRUS 
+                        --salmon_index_human SALMON_INDEX_HUMAN
+                        --salmon_quantdir_human SALMON_QUANTDIR_HUMAN
+                        [--hit_cutoff HIT_CUTOFF]
+                        [--kz_threshold KZ_THRESHOLD]
+                        [job_order]
+
+positional arguments:
+  job_order             Job input json file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --fastq FASTQ
+  --genomeDir_human GENOMEDIR_HUMAN
+  --outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN
+  --nthreads NTHREADS
+  --genomeDir_virus GENOMEDIR_VIRUS
+  --salmon_quantdir_human SALMON_QUANTDIR_HUMAN
+  --salmon_index_human SALMON_INDEX_HUMAN
+  --hit_cutoff HIT_CUTOFF
+  --kz_threshold KZ_THRESHOLD default : 0.1.
+```
+
+example1
+
+```
+./VIRTUS.SE.cwl VIRTUS.SE.job.yaml
+```
+
+example2
+
+```
+./VIRTUS.SE.cwl \
+--fastq ../test/SRR8315715_2.fastq.gz \
+--genomeDir_human ../test/STAR_index_human \
+--genomeDir_virus ../test/STAR_index_virus \
+--salmon_index_human ../test/salmon_index_human \
+--salmon_quantdir_human salmon_human \
+--outFileNamePrefix_human human \
+--nthreads 40
+```
+
+
+### Wrapper for multiple analysis
+
+THe wrapper script is deposited in `VIRTUS2/wrapper`.
+
+VIRTUS2 has a great wrapper for multiple samples. The input is a comma-separated text file or CSV file. The first column is arbitral sample names, the second is SRR id, or fastq files (when you specify `--fastq` option). Note that `--fastq` requires the suffix removed file names. Refer to the documentation in more detail.  The third column is the sequence layout (SE or PE), and the Fourth is groups. Let's create an example csv file (or [download it](https://raw.githubusercontent.com/yyoshiaki/VIRTUS2/master/wrapper/input.csv)).
 
 input.csv
 ```
@@ -87,4 +282,134 @@ You can get this heatmap and `summary.csv` which contains the ratio of viral rea
 
 ![img](https://github.com/yyoshiaki/VIRTUS2/blob/master/img/clustermap.png)
 
+
+#### **input**
+- experiment matrix should be separated by commas (csv format).
+- Only 2 groups can be tested.
+
+**SRR mode**
+
+|  name  |  SRR |  Layout  | Group | ... |
+| ---- | ---- | - | - | - |
+|  Inf_1  | SRR9856913 | PE | infected | ...|
+|  Ctrl_1  |  SRR9856914  | PE  | Mock | ... |
+
+**fastq mode**
+
+|  name  |  fastq |  Layout  | Group | ... |
+| ---- | ---- | - | - | - |
+|  Inf_1  | hoge/SRR9856913 | PE | infected | ...|
+|  Ctrl_1  |  hoge/SRR9856914  | PE  | Mock | ... |
+
+- If you want to use your own fastq, add `---fastq` option. This wrapper supports only `.fastq` and `.fastq.gz`.
+
+- fastq file specifies path excluding `.fastq.gz` or `_1.fastq.gz` and `_2.fastq.gz`. For example, `hoge/SRR1234567.fastq.gz` is described as `hoge/SRR1234567`.
+
+- If suffix is not `.fastq.gz` or `_1.fastq.gz` and `_2.fastq.gz`, add `-s` or `-s1` and `-s2` options.
+
+```
+usage: VIRTUS_wrapper.py [-h] --VIRTUSDir VIRTUSDIR --genomeDir_human
+                         GENOMEDIR_HUMAN --genomeDir_virus GENOMEDIR_VIRUS
+                         --salmon_index_human SALMON_INDEX_HUMAN
+                         [--salmon_quantdir_human SALMON_QUANTDIR_HUMAN]
+                         [--outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN]
+                         [--nthreads NTHREADS] [--hit_cutoff HIT_CUTOFF] [-s SUFFIX_SE]
+                         [-s1 SUFFIX_PE_1] [-s2 SUFFIX_PE_2] [--fastq]
+                         input_path
+
+positional arguments:
+  input_path
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --VIRTUSDir VIRTUSDIR
+  --genomeDir_human GENOMEDIR_HUMAN
+  --genomeDir_virus GENOMEDIR_VIRUS
+  --salmon_index_human SALMON_INDEX_HUMAN
+  --salmon_quantdir_human SALMON_QUANTDIR_HUMAN
+  --outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN
+  --nthreads NTHREADS
+  --hit_cutoff HIT_CUTOFF
+  -s SUFFIX_SE, --Suffix_SE SUFFIX_SE
+  -s1 SUFFIX_PE_1, --Suffix_PE_1 SUFFIX_PE_1
+  -s2 SUFFIX_PE_2, --Suffix_PE_2 SUFFIX_PE_2
+  --fastq
+```
+example
+```
+./VIRTUS_wrapper.py input.csv \
+    --VIRTUS ../VIRTUS \
+    --genomeDir_human ../VIRTUS/index/STAR_index_human \
+    --genomeDir_virus ../VIRTUS/index/STAR_index_virus \
+    --salmon_index_human ../VIRTUS/index/salmon_index_human
+```
+
+#### output image
+
+![img/clustermap.png](https://github.com/yyoshiaki/VIRTUS2/raw/master/img/clustermap.png)
+
+The value is the ratio of viral reads (hit viral reads/read mapped on the human genome).
+
+#### test
+
+After you clone this repo, try the test run first.
+
+```
+cd test
+bash test.sh
+```
+
+For developers, cwltest is done by `bash cwltest.sh` in `test` directory.
+
+#### cwl sources
+
+- [https://github.com/pitagora-network/DAT2-cwl](https://github.com/pitagora-network/DAT2-cwl/tree/develop) : most tools
+- [https://github.com/roryk/salmon-cwl](https://github.com/roryk/salmon-cwl) : salmon
+- [https://github.com/nigyta/bact_genome](https://github.com/nigyta/bact_genome) : fastp
+
+
 ## Tips
+
+- cwltool may occupy all the system disk by tmp directory. If you suspect the situation, check `/tmp` or avoid by cwltool's option. The example is below. You can also delete the dir by `--rm-tmpdir`.
+
+```
+cwltool --tmp-outdir-prefix=/home/yyasumizu/tmp_cwl/ \
+--tmpdir-prefix=/home/yyasumizu/tmp_cwl/ \
+~/yyoshiaki-git/VIRTUS/workflow/VIRTUS.PE.cwl \
+--fastq1 /home/yyasumizu/NGS_public/PRJEB31829_Blimph_EB/donor1_day0_1.fastq.gz \
+--fastq2 /home/yyasumizu/NGS_public/PRJEB31829_Blimph_EB/donor1_day0_2.fastq.gz \
+--genomeDir_human /home/yyasumizu/yyoshiaki-git/VIRTUS/test/STAR_index_human \
+--genomeDir_virus /home/yyasumizu/yyoshiaki-git/VIRTUS/test/STAR_index_virus \
+--salmon_index_human /home/yyasumizu/yyoshiaki-git/VIRTUS/test/salmon_index_human \
+--salmon_quantdir_human donor1_day0/salmon_human \
+--outFileNamePrefix_human /home/yyasumizu/EB_VIRTUS/donor1_day0/human --nthreads 20
+```
+
+- when you specify .cwl files in the absolute path, error may occur. use the relative path.
+- note that you cannnot use `\`in --outFileNamePrefix_*
+- STAR will require memory at least 30GB. Check your resources.
+- Some options instead of docker are available. Specify cwltool option `--user-space-docker-cmd=udocker`, `--singularity`.
+- You can specify another host's reference URL such as the mouse in createindex steps, but note that virus references are designed for human viruses. We don't guarantee the result when you changed the reference species.  
+- When you feel the sequence depth may be insufficient, see `virusAligned.filtered.sortedByCoord.out.bam` which conteins mapped reads assigned to viruses. Users can adjust the cutoff by `--hit_cutoff`. For screening viruses, we recommend users set the cutoff to a low number such as 50.
+
+## VIRTUS2 for single cell RNAseq
+
+### virus detection for 10x or Dropseq
+
+10x and Dropseq use paired-end sequences. The second fastq file contains only transcript's sequences. We recommend users first to run `VIRTUS.SE.cwl` for the second reads　as a screening. For detected viruses, users can quantify in several ways; 1) [cellrenger with a modified reference](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/tutorial_mr), 2) run [STAR solo](https://github.com/alexdobin/STAR/blob/master/docs/STARsolo.md#barcode-and-cdna-on-the-same-mate) with a custom reference, 3) run alevin for the detected virus. `createindex_singlevirus.cwl` can be used for building the index for [Alevin](https://salmon.readthedocs.io/en/latest/alevin.html). For example, the Dropseq's output from SRR8315715 can be screened like the command below.
+
+```
+./VIRTUS.SE.cwl \
+--fastq ../test/SRR8315715_2.fastq.gz \
+--genomeDir_human ../test/STAR_index_human \
+--genomeDir_virus ../test/STAR_index_virus \
+--salmon_index_human ../test/salmon_index_human \
+--salmon_quantdir_human salmon_human \
+--outFileNamePrefix_human human \
+--nthreads 40
+```
+
+### virus detection for SmartSeq2
+
+Just use `VIRTUS.PE.cwl` on each cell individually. When the number of reads is insufficient, VIRTUS may not detect viruses. The default threashold of the hit reads is 400. You can adjust the value in `tool/mk_virus_count.cwl`.
+
