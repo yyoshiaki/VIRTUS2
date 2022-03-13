@@ -362,7 +362,7 @@ cwltool --tmp-outdir-prefix=/home/yyasumizu/tmp_cwl/ \
 - when you specify .cwl files in the absolute path, error may occur. use the relative path.
 - note that you cannnot use `\`in --outFileNamePrefix_*
 - STAR will require memory at least 30GB. Check your resources.
-- Some options instead of docker are available. Specify cwltool option `--user-space-docker-cmd=udocker`, `--singularity`.
+- Some options instead of docker are available. Specify cwltool option `--user-space-docker-cmd=udocker`, `--singularity`. Increase a limited number by `ulimit -n 4096` (or more) may be required.
 - You can specify another host's reference URL such as the mouse in createindex steps, but note that virus references are designed for human viruses. We don't guarantee the result when you changed the reference species.
 
 ## VIRTUS2 for single cell RNAseq
