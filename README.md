@@ -292,7 +292,7 @@ VIRTUS_wrapper.py input.csv \
 You can get this heatmap and `summary.csv` which contains the ratio of viral reads (hit viral reads/read mapped on the human genome), the stats by Mann-Whitney's U-test, and its false discovery rate.
 
 ![img](https://github.com/yyoshiaki/VIRTUS2/blob/master/img/clustermap.png)
-
+The value is the ratio of viral reads (hit viral reads/read mapped on the human genome).
 
 #### **input**
 - experiment matrix should be separated by commas (csv format).
@@ -359,30 +359,6 @@ example
     --plotth 0.0001
 ```
 
-#### output image
-
-![img/clustermap.png](https://github.com/yyoshiaki/VIRTUS2/raw/master/img/clustermap.png)
-
-The value is the ratio of viral reads (hit viral reads/read mapped on the human genome).
-
-#### test
-
-After you clone this repo, try the test run first.
-
-```
-cd test
-bash test.sh
-```
-
-For developers, cwltest is done by `bash cwltest.sh` in `test` directory.
-
-#### cwl sources
-
-- [https://github.com/pitagora-network/DAT2-cwl](https://github.com/pitagora-network/DAT2-cwl/tree/develop) : most tools
-- [https://github.com/roryk/salmon-cwl](https://github.com/roryk/salmon-cwl) : salmon
-- [https://github.com/nigyta/bact_genome](https://github.com/nigyta/bact_genome) : fastp
-
-
 ## Tips
 
 - cwltool may occupy all the system disk by tmp directory. If you suspect the situation, check `/tmp` or avoid by cwltool's option. The example is below. You can also delete the dir by `--rm-tmpdir`.
@@ -395,8 +371,6 @@ cwltool --tmp-outdir-prefix=/home/yyasumizu/tmp_cwl/ \
 --fastq2 /home/yyasumizu/NGS_public/PRJEB31829_Blimph_EB/donor1_day0_2.fastq.gz \
 --genomeDir_human /home/yyasumizu/yyoshiaki-git/VIRTUS/test/STAR_index_human \
 --genomeDir_virus /home/yyasumizu/yyoshiaki-git/VIRTUS/test/STAR_index_virus \
---salmon_index_human /home/yyasumizu/yyoshiaki-git/VIRTUS/test/salmon_index_human \
---salmon_quantdir_human donor1_day0/salmon_human \
 --outFileNamePrefix_human /home/yyasumizu/EB_VIRTUS/donor1_day0/human --nthreads 20
 ```
 
@@ -404,14 +378,13 @@ cwltool --tmp-outdir-prefix=/home/yyasumizu/tmp_cwl/ \
 - note that you cannnot use `\`in --outFileNamePrefix_*
 - STAR will require memory at least 30GB. Check your resources.
 - Some options instead of docker are available. Specify cwltool option `--user-space-docker-cmd=udocker`, `--singularity`.
-- You can specify another host's reference URL such as the mouse in createindex steps, but note that virus references are designed for human viruses. We don't guarantee the result when you changed the reference species.  
-- When you feel the sequence depth may be insufficient, see `virusAligned.filtered.sortedByCoord.out.bam` which conteins mapped reads assigned to viruses. Users can adjust the cutoff by `--hit_cutoff`. For screening viruses, we recommend users set the cutoff to a low number such as 50.
+- You can specify another host's reference URL such as the mouse in createindex steps, but note that virus references are designed for human viruses. We don't guarantee the result when you changed the reference species.
 
 ## VIRTUS2 for single cell RNAseq
 
 ### virus detection for 10x or Dropseq
 
-10x and Dropseq use paired-end sequences. The second fastq file contains only transcript's sequences. We recommend users first to run `VIRTUS.SE.cwl` for the second reads　as a virome-wide screening. For detected viruses, users can quantify in several ways; 1) [cellrenger with a modified reference](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/tutorial_mr), 2) run [STAR solo](https://github.com/alexdobin/STAR/blob/master/docs/STARsolo.md#barcode-and-cdna-on-the-same-mate) with a custom reference, 3) run alevin for the detected virus. `createindex_singlevirus.cwl` can be used for building the index for [Alevin](https://salmon.readthedocs.io/en/latest/alevin.html). For example, the Dropseq's output from SRR8315715 can be screened like the command below.
+10x and Dropseq use paired-end sequences. The second fastq file contains only transcript's sequences. We recommend users first to run `VIRTUS.SE.cwl` for the second reads　as a virome-wide screening. For detected viruses, users can quantify in several ways; 1) [cellrenger with a modified reference](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/tutorial_mr), 2) run [STAR solo](https://github.com/alexdobin/STAR/blob/master/docs/STARsolo.md#barcode-and-cdna-on-the-same-mate) with a custom reference, 3) run alevin for the detected virus. `createindex_singlevirus.cwl` in VIRTUS1 can be used for building the index for [Alevin](https://salmon.readthedocs.io/en/latest/alevin.html). For example, the Dropseq's output from SRR8315715 can be screened like the command below.
 
 ```
 ./VIRTUS.SE.cwl \
@@ -427,6 +400,21 @@ cwltool --tmp-outdir-prefix=/home/yyasumizu/tmp_cwl/ \
 ### virus detection for SmartSeq2
 
 Just use `VIRTUS.PE.cwl` on each cell individually. When the number of reads is insufficient, VIRTUS may not detect viruses.
+
+## Test
+
+After you clone this repo, you can test VIRTUS2.
+
+```
+cd test
+bash test.sh
+```
+
+## cwl sources
+
+- [https://github.com/pitagora-network/DAT2-cwl](https://github.com/pitagora-network/DAT2-cwl/tree/develop) : most tools
+- [https://github.com/roryk/salmon-cwl](https://github.com/roryk/salmon-cwl) : salmon
+- [https://github.com/nigyta/bact_genome](https://github.com/nigyta/bact_genome) : fastp
 
 ## Contact
 
