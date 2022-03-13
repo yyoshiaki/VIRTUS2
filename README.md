@@ -6,25 +6,6 @@ Virus transcript detection and quantification using normal human RNAseq. VIRTUS 
 
 ![img](https://github.com/yyoshiaki/VIRTUS2/raw/master/img/webimage.jpg)
 
-## Contact
-
-Yoshiaki Yasumizu ([yyasumizu@ifrec.osaka-u.ac.jp](yyasumizu@ifrec.osaka-u.ac.jp))
-
-## Citation
-
-Yoshiaki Yasumizu, Atsushi Hara, Shimon Sakaguchi, Naganari Ohkura, VIRTUS: a pipeline for comprehensive virus analysis from conventional RNA-seq data, *Bioinformatics*, Volume 37, Issue 10, 15 May 2021, Pages 1465–1467, [https://doi.org/10.1093/bioinformatics/btaa859](https://doi.org/10.1093/bioinformatics/btaa859)
-
-## Acknowledgement
-
-- [Kozo Nishida](https://github.com/kozo2) : CI config and many other supports.
-- Ayano Onishi : Logo design.
-
-## Licence
-
-This software is freely available for academic users. Usage for commercial purposes is not allowed. Please refer to the LICENCE page.
-
-<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a>
-
 ## Update from [VIRTUS1](https://github.com/yyoshiaki/VIRTUS)
 
 To focus on virus-wide exploration, we changed several functions from VIRTUS1.
@@ -447,3 +428,21 @@ cwltool --tmp-outdir-prefix=/home/yyasumizu/tmp_cwl/ \
 
 Just use `VIRTUS.PE.cwl` on each cell individually. When the number of reads is insufficient, VIRTUS may not detect viruses.
 
+## Contact
+
+Yoshiaki Yasumizu ([yyasumizu@ifrec.osaka-u.ac.jp](yyasumizu@ifrec.osaka-u.ac.jp))
+
+## Citation
+
+Yoshiaki Yasumizu, Atsushi Hara, Shimon Sakaguchi, Naganari Ohkura, VIRTUS: a pipeline for comprehensive virus analysis from conventional RNA-seq data, *Bioinformatics*, Volume 37, Issue 10, 15 May 2021, Pages 1465–1467, [https://doi.org/10.1093/bioinformatics/btaa859](https://doi.org/10.1093/bioinformatics/btaa859)
+
+## Acknowledgement
+
+- [Kozo Nishida](https://github.com/kozo2) : CI config and many other supports.
+- Ayano Onishi : Logo design.
+
+## Licence
+
+This software is freely available for academic users. Usage for commercial purposes is not allowed. Please refer to the LICENCE page.
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a>
