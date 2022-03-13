@@ -1,6 +1,6 @@
 # VIRTUS2 : VIRal Transcript Usage Sensor v2.0 <img src="https://github.com/yyoshiaki/VIRTUS/raw/master/img/VIRTUS.jpg" width="20%" align="right" />
 
-**Note : We updated VIRTUS to version2. In this version, we removed the gene quantification step by Salmon and single virus mode, and added coverage on viral genomes to the result to focus on virus-wide exploration. If you want to use the single virus mode, visit [https://github.com/yyoshiaki/VIRTUS](https://github.com/yyoshiaki/VIRTUS)**
+**!!Note : We updated VIRTUS to version2. In this version, we removed the gene quantification step by Salmon and single virus mode, and added coverage on viral genomes to the result to focus on virus-wide exploration. If you want to use the single virus mode, visit [https://github.com/yyoshiaki/VIRTUS](https://github.com/yyoshiaki/VIRTUS)**
 
 Virus transcript detection and quantification using normal human RNAseq. VIRTUS is the first tool to detect viral transcripts considering their splicing event rather than the viral genome copy number. VIRTUS can be applied to both bulk RNAseq and single-cell RNAseq. The virus reference covers 762 viruses including SARS-CoV-2 (cause of COVID-19). The workflow is implemented by [Common Workflow Language](https://www.commonwl.org/) and [Rabix](https://rabix.io/). You can specify each parameter individually or give `yaml` or `json` file which describes all the parameter information. In detail, check [the CWL User Guide](http://www.commonwl.org/user_guide/) out. 
 
