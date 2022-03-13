@@ -49,7 +49,7 @@ Setup [docker](https://www.docker.com/). If you are using Mac, increase the memo
 git clone https://github.com/yyoshiaki/VIRTUS2
 ```
 
-You can add `./VIRTUS/bin` to `PATH` in `.zshrc` or `.bashrc` etc.
+You can add `./VIRTUS/bin` to `PATH` in `.zshrc` or `.bashrc` etc. If you have used VIRTUS1, you need to remove the path to VIRTUS1 to avoid conflicts.
 
 4. Version confirmation
 
@@ -57,27 +57,12 @@ You can add `./VIRTUS/bin` to `PATH` in `.zshrc` or `.bashrc` etc.
 
 ### VIRTUS wrapper
 
-VIRTUS wrapper uses Python3 and several packages. To manage python and packages, anaconda is useful.
-
-1. install Python packages
+VIRTUS wrapper uses Python3 and several packages. To install python packages, you may need to execute the command below after installing python3.
 
 ```
 pip install numpy pandas scipy statsmodels seaborn
 ```
 
-just it.
-
-2. Install Docker
-
-Install docker (alternatively, you can use udocker when you have no root privileges. See [Tips section](https://github.com/yyoshiaki/VIRTUS2#tips).)
-
-3. clone the repo and add the path.
-
-```
-git clone https://github.com/yyoshiaki/VIRTUS2
-```
-
-You can add `./VIRTUS2/bin` to `PATH` in `.zshrc` or `.bashrc` etc. 
 
 ## Usage
 
