@@ -28,6 +28,8 @@ parser.add_argument('-s', '--Suffix_SE')
 parser.add_argument('-s1', '--Suffix_PE_1')
 parser.add_argument('-s2', '--Suffix_PE_2')
 parser.add_argument('--fastq', action = 'store_true')
+parser.add_argument('--figsize', default = '6,6', help='(default:6,6)')
+parser.add_argument('--plotth', default = '0', help='threshold rate to plot (default:0)')
 
 args = parser.parse_args()
 
@@ -205,8 +207,13 @@ if summary["Group"].nunique() == 2:
 
 summary.to_csv("summary.csv")
 
+
 # %% Graph drawing
-g = sns.clustermap(summary.iloc[:-3,:-1].T, method = "ward", metric="euclidean")
+summary = summary.iloc[:-3,:-1].T
+summary = summary[summary.max(axis=1) > float(args.plotth)]
+
+figsize = (int(args.figsize.split(',')[0]), int(args.figsize.split(',')[1]))
+g = sns.clustermap(summary, method = "ward", metric="euclidean", figsize=figsize)
 g.savefig("clustermap.pdf", bbox_inches='tight')
 
 print('All processes succeeded.')

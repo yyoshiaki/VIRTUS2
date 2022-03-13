@@ -338,14 +338,18 @@ You can get this heatmap and `summary.csv` which contains the ratio of viral rea
 - If suffix is not `.fastq.gz` or `_1.fastq.gz` and `_2.fastq.gz`, add `-s` or `-s1` and `-s2` options.
 
 ```
-usage: VIRTUS_wrapper.py [-h] --VIRTUSDir VIRTUSDIR --genomeDir_human
-                         GENOMEDIR_HUMAN --genomeDir_virus GENOMEDIR_VIRUS
-                         --salmon_index_human SALMON_INDEX_HUMAN
-                         [--salmon_quantdir_human SALMON_QUANTDIR_HUMAN]
-                         [--outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN]
-                         [--nthreads NTHREADS] [--hit_cutoff HIT_CUTOFF] [-s SUFFIX_SE]
-                         [-s1 SUFFIX_PE_1] [-s2 SUFFIX_PE_2] [--fastq]
-                         input_path
+usage: VIRTUS_wrapper.py [-h] \
+                        [--VIRTUSDir VIRTUSDIR] \
+                        --genomeDir_human GENOMEDIR_HUMAN \
+                        --genomeDir_virus GENOMEDIR_VIRUS \
+                        [--outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN] \
+                        [--nthreads NTHREADS] \
+                        [-s SUFFIX_SE] \
+                        [-s1 SUFFIX_PE_1] \
+                        [-s2 SUFFIX_PE_2] \
+                        [--fastq] \
+                        [--figsize FIGSIZE] \
+                        input_path
 
 positional arguments:
   input_path
@@ -355,15 +359,14 @@ optional arguments:
   --VIRTUSDir VIRTUSDIR
   --genomeDir_human GENOMEDIR_HUMAN
   --genomeDir_virus GENOMEDIR_VIRUS
-  --salmon_index_human SALMON_INDEX_HUMAN
-  --salmon_quantdir_human SALMON_QUANTDIR_HUMAN
   --outFileNamePrefix_human OUTFILENAMEPREFIX_HUMAN
   --nthreads NTHREADS
-  --hit_cutoff HIT_CUTOFF
   -s SUFFIX_SE, --Suffix_SE SUFFIX_SE
   -s1 SUFFIX_PE_1, --Suffix_PE_1 SUFFIX_PE_1
   -s2 SUFFIX_PE_2, --Suffix_PE_2 SUFFIX_PE_2
   --fastq
+  --figsize FIGSIZE     (default:6,6)
+  --plotth PLOTTH       threshold rate to plot (default:0)
 ```
 example
 ```
@@ -371,7 +374,8 @@ example
     --VIRTUS ../VIRTUS \
     --genomeDir_human ../VIRTUS/index/STAR_index_human \
     --genomeDir_virus ../VIRTUS/index/STAR_index_virus \
-    --salmon_index_human ../VIRTUS/index/salmon_index_human
+    --figsize 3,3 \
+    --plotth 0.0001
 ```
 
 #### output image
