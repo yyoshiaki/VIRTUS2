@@ -274,7 +274,7 @@ VIRTUS_wrapper.py input.csv \
     --nthreads=4
 ```
 
-You can get this heatmap and `summary.csv` which contains the ratio of viral reads (hit viral reads/read mapped on the human genome), the stats by Mann-Whitney's U-test, and its false discovery rate.
+You can get this heatmap and `summary.csv` which contains the coverage on viral genomes (_cov) the ratio of viral reads (hit viral reads/read mapped on the human genome; _rate), the stats by Mann-Whitney's U-test, and its false discovery rate.
 
 ![img](https://github.com/yyoshiaki/VIRTUS2/blob/master/img/scattermap.png)
 The value is the ratio of viral reads (hit viral reads/read mapped on the human genome).
