@@ -8,5 +8,6 @@ wrapper/*
 !wrapper/input.csv
 !wrapper/input.fastq.csv
 !wrapper/VIRTUS_wrapper.py
+!wrapper/scattermap.py
 .vscode/settings.json
 ._.DS_Store
