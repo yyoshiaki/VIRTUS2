@@ -276,7 +276,7 @@ VIRTUS_wrapper.py input.csv \
 
 You can get this heatmap and `summary.csv` which contains the ratio of viral reads (hit viral reads/read mapped on the human genome), the stats by Mann-Whitney's U-test, and its false discovery rate.
 
-![img](https://github.com/yyoshiaki/VIRTUS2/blob/master/img/clustermap.png)
+![img](https://github.com/yyoshiaki/VIRTUS2/blob/master/img/scattermap.png)
 The value is the ratio of viral reads (hit viral reads/read mapped on the human genome).
 
 #### **input**
@@ -315,6 +315,7 @@ usage: VIRTUS_wrapper.py [-h] \
                         [-s2 SUFFIX_PE_2] \
                         [--fastq] \
                         [--figsize FIGSIZE] \
+                        [--th_cov TH_COV] [--th_rate TH_RATE] \
                         input_path
 
 positional arguments:
@@ -332,7 +333,8 @@ optional arguments:
   -s2 SUFFIX_PE_2, --Suffix_PE_2 SUFFIX_PE_2
   --fastq
   --figsize FIGSIZE     (default:6,6)
-  --plotth PLOTTH       threshold rate to plot (default:0)
+  --th_cov TH_COV       threshold of max viral coverage to plot, test (default:10)
+  --th_rate TH_RATE     threshold of max rate virus/human to plot, test (default:0.0001)
 ```
 example
 ```
@@ -340,8 +342,7 @@ example
     --VIRTUS ../VIRTUS \
     --genomeDir_human ../VIRTUS/index/STAR_index_human \
     --genomeDir_virus ../VIRTUS/index/STAR_index_virus \
-    --figsize 3,3 \
-    --plotth 0.0001
+    --figsize 3,3 
 ```
 
 ## Tips

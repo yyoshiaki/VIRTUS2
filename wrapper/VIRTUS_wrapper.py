@@ -10,10 +10,13 @@ from scipy import stats
 from statsmodels.stats.multitest import multipletests
 import seaborn as sns
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 import pathlib
 import re
 mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams['ps.fonttype'] = 42
+
+from scattermap import scattermap
 
 # %% Argument setting
 parser = argparse.ArgumentParser()
@@ -28,8 +31,9 @@ parser.add_argument('-s', '--Suffix_SE')
 parser.add_argument('-s1', '--Suffix_PE_1')
 parser.add_argument('-s2', '--Suffix_PE_2')
 parser.add_argument('--fastq', action = 'store_true')
-parser.add_argument('--figsize', default = '6,6', help='(default:6,6)')
-parser.add_argument('--plotth', default = '0', help='threshold rate to plot (default:0)')
+parser.add_argument('--figsize', default = '8,3', help='(default:8,3)')
+parser.add_argument('--th_cov', default = '10', help='threshold of max viral coverage to plot, test (default:10)')
+parser.add_argument('--th_rate', default = '0.0001', help='threshold of max rate virus/human to plot, test (default:0.0001)')
 
 args = parser.parse_args()
 
@@ -50,7 +54,7 @@ except (ValueError, IndexError):
     exit('invalid path to VIRTUS. try to change --VIRTUSDir to the absolute path.')
 
 # %%
-series_list = []
+list_df_res = []
 
 for index, item in df.iterrows():
     # parameter setting
@@ -171,49 +175,73 @@ for index, item in df.iterrows():
         subprocess.run(VIRTUS_cmd, shell = True)
         
             
-    df_virus = pd.read_table("VIRTUS.output.txt".format(name), index_col = 0)
-    series_virus = df_virus.loc[:,"rate_hit"]
-    series_virus = series_virus.rename(item['Name'])
-    series_list.append(series_virus)
+    d = pd.read_table("VIRTUS.output.txt".format(name))
+    list_df_res.append(d)
+    d['name'] = item['Name']
 
     os.chdir("..")
 
 # %% summary
-summary = pd.concat(series_list, axis = 1).fillna(0).T
-summary["Group"] = df["Group"].values
+df_res = pd.concat(list_df_res)
 
-summary_dict = {}
-Group = summary["Group"].unique()
-for i in Group:
-    summary_dict[i] = summary[summary["Group"] == i]
+th_cov = float(args.th_cov)
+th_rate = float(args.th_rate)
+
+df_rate = pd.pivot(df_res, index='virus', columns='name', values="rate_hit").fillna(0)
+df_cov = pd.pivot(df_res, index='virus', columns='name', values="coverage").fillna(0)
+
+df_cov = df_cov[df_cov.max(axis=1) > th_cov]
+df_rate = df_rate[df_rate.max(axis=1) > th_rate]
+
+list_index = (set(list(df_rate.index)) & set(list(df_cov.index)))
+
+df_cov = df_cov.loc[list_index]
+df_rate = df_rate.loc[list_index]
+
+df_cov = df_cov[df_rate.columns]
+
+summary = pd.merge(df_cov, df_rate, left_index=True, right_index=True, suffixes=('_cov', '_rate'))
+
 
 uval = pd.Series(dtype = "float64")
 pval = pd.Series(dtype = "float64")
 
-if summary["Group"].nunique() == 2:
+if df["Group"].nunique() == 2:
     print("Conducting Mann-Whitney U-test")
-    for i in range(0,len(summary.columns)-1):
-        if summary["Group"].nunique() == 2:
-
-            u, p = stats.mannwhitneyu(summary_dict[Group[0]].iloc[:,i],summary_dict[Group[1]].iloc[:,i], alternative = "two-sided")
-            uval[summary.columns[i]] = u
-            pval[summary.columns[i]] = p
+    for v in summary.index:
+        u, p = stats.mannwhitneyu(summary.loc[v, ['{}_rate'.format(x) for x in df.loc[df['Group']==df['Group'].unique()[0], 'Name']]],
+        summary.loc[v, ['{}_rate'.format(x) for x in df.loc[df['Group']==df['Group'].unique()[1], 'Name']]], alternative = "two-sided")
+        uval[v] = u
+        pval[v] = p
 
     fdr = pd.Series(multipletests(pval,method = "fdr_bh")[1], index = pval.index)
 
-    summary.loc["u-value"] = uval
-    summary.loc["p-value"] = pval
-    summary.loc["FDR"] = fdr
+    summary["u-value"] = uval
+    summary["p-value"] = pval
+    summary["FDR"] = fdr
 
 summary.to_csv("summary.csv")
 
 
 # %% Graph drawing
-summary = summary.iloc[:-3,:-1].T
-summary = summary[summary.max(axis=1) > float(args.plotth)]
-
 figsize = (int(args.figsize.split(',')[0]), int(args.figsize.split(',')[1]))
-g = sns.clustermap(summary, method = "ward", metric="euclidean", figsize=figsize)
-g.savefig("clustermap.pdf", bbox_inches='tight')
+# g = sns.clustermap(summary, method = "ward", metric="euclidean", figsize=figsize)
+# g.savefig("clustermap.pdf", bbox_inches='tight')
+
+
+with sns.axes_style("white"):
+    plt.figure(figsize=figsize)
+    ax = scattermap(df_rate, square=True, marker_size=df_cov, cmap='viridis_r',
+    cbar_kws={'label': 'v/h rate'})
+
+    #make a legend:
+    pws = [20, 40, 60, 80, 100]
+    for pw in pws:
+        plt.scatter([], [], s=(pw), c="k",label=str(pw))
+
+    h, l = plt.gca().get_legend_handles_labels()
+    plt.legend(h[1:], l[1:], labelspacing=.3, title="coverage(%)", borderpad=0, framealpha=0, edgecolor="w",
+                bbox_to_anchor=(1.1, -.1), ncol=1, loc='upper left', borderaxespad=0)
+    plt.savefig('scattermap.pdf' , bbox_inches='tight')
 
 print('All processes succeeded.')
