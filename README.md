@@ -13,6 +13,7 @@ To focus on virus-wide exploration, we changed several functions from VIRTUS1.
 - removed the single virus mode
 - added coverage on the viral genome and quality information on the results.
 - removed the default filter for low hit viruses.
+- new visualization by VIRTUS_wrapper.py
 
 ## Tutorials
 
