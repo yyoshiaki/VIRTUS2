@@ -6,4 +6,4 @@ runThreadN: 40
 url_genomefasta_human: >-
   ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_33/GRCh38.p13.genome.fa.gz
 url_virus: >-
-  https://raw.githubusercontent.com/yyoshiaki/VIRTUS/master/data/viruses.fasta
+  https://raw.githubusercontent.com/yyoshiaki/VIRTUS2/master/data/viruses.fasta
