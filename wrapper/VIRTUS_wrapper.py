@@ -206,15 +206,31 @@ summary = pd.merge(df_cov, df_rate, left_index=True, right_index=True, suffixes=
 uval = pd.Series(dtype = "float64")
 pval = pd.Series(dtype = "float64")
 
-if df["Group"].nunique() == 2:
-    print("Conducting Mann-Whitney U-test")
-    for v in summary.index:
-        u, p = stats.mannwhitneyu(summary.loc[v, ['{}_rate'.format(x) for x in df.loc[df['Group']==df['Group'].unique()[0], 'Name']]],
-        summary.loc[v, ['{}_rate'.format(x) for x in df.loc[df['Group']==df['Group'].unique()[1], 'Name']]], alternative = "two-sided")
-        uval[v] = u
-        pval[v] = p
+# print(summary)
 
-    fdr = pd.Series(multipletests(pval,method = "fdr_bh")[1], index = pval.index)
+print("### Stats ###")
+print('Threshold coverage : ', th_cov)
+print('Threshold rate : ', th_rate)
+
+print('# detected viruses : ', df_res.shape[0])
+print('Max coverage : ', df_res.coverage.max())
+print('Max rate : ', df_res.rate_hit.max())
+
+print('# retained viruses :', summary.shape[0])
+
+if df["Group"].nunique() == 2:
+    if summary.shape[0] > 0:
+        print("Conducting Mann-Whitney U-test")
+        for v in summary.index:
+            u, p = stats.mannwhitneyu(summary.loc[v, ['{}_rate'.format(x) for x in df.loc[df['Group']==df['Group'].unique()[0], 'Name']]],
+            summary.loc[v, ['{}_rate'.format(x) for x in df.loc[df['Group']==df['Group'].unique()[1], 'Name']]], alternative = "two-sided")
+            uval[v] = u
+            pval[v] = p
+
+        fdr = pd.Series(multipletests(pval,method = "fdr_bh")[1], index = pval.index)
+    else:
+        print("Skipped Mann-Whitney U-test")
+        fdr = ""
 
     summary["u-value"] = uval
     summary["p-value"] = pval
@@ -224,24 +240,25 @@ summary.to_csv("summary.csv")
 
 
 # %% Graph drawing
-figsize = (int(args.figsize.split(',')[0]), int(args.figsize.split(',')[1]))
-# g = sns.clustermap(summary, method = "ward", metric="euclidean", figsize=figsize)
-# g.savefig("clustermap.pdf", bbox_inches='tight')
+if summary.shape[0] > 0:
+    figsize = (int(args.figsize.split(',')[0]), int(args.figsize.split(',')[1]))
+    # g = sns.clustermap(summary, method = "ward", metric="euclidean", figsize=figsize)
+    # g.savefig("clustermap.pdf", bbox_inches='tight')
 
 
-with sns.axes_style("white"):
-    plt.figure(figsize=figsize)
-    ax = scattermap(df_rate, square=True, marker_size=df_cov, cmap='viridis_r',
-    cbar_kws={'label': 'v/h rate'})
+    with sns.axes_style("white"):
+        plt.figure(figsize=figsize)
+        ax = scattermap(df_rate, square=True, marker_size=df_cov, cmap='viridis_r',
+        cbar_kws={'label': 'v/h rate'})
 
-    #make a legend:
-    pws = [20, 40, 60, 80, 100]
-    for pw in pws:
-        plt.scatter([], [], s=(pw), c="k",label=str(pw))
+        #make a legend:
+        pws = [20, 40, 60, 80, 100]
+        for pw in pws:
+            plt.scatter([], [], s=(pw), c="k",label=str(pw))
 
-    h, l = plt.gca().get_legend_handles_labels()
-    plt.legend(h[1:], l[1:], labelspacing=.3, title="coverage(%)", borderpad=0, framealpha=0, edgecolor="w",
-                bbox_to_anchor=(1.1, -.1), ncol=1, loc='upper left', borderaxespad=0)
-    plt.savefig('scattermap.pdf' , bbox_inches='tight')
+        h, l = plt.gca().get_legend_handles_labels()
+        plt.legend(h[1:], l[1:], labelspacing=.3, title="coverage(%)", borderpad=0, framealpha=0, edgecolor="w",
+                    bbox_to_anchor=(1.1, -.1), ncol=1, loc='upper left', borderaxespad=0)
+        plt.savefig('scattermap.pdf' , bbox_inches='tight')
 
 print('All processes succeeded.')
