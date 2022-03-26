@@ -27,7 +27,7 @@ To focus on virus-wide exploration, we changed several functions from VIRTUS1.
 ### dependencies
 
 - python3
-- cwltool `pip install cwlref-runner` 
+- cwltool `pip install cwltool==3.1.20210922203925` 
 - docker (alternatively, you can use udocker, or singularity mode when you have no root privileges. See [Tips section](https://github.com/yyoshiaki/VIRTUS#tips).)
 - STAR requires about 37Gb RAM.
 
@@ -36,10 +36,11 @@ To focus on virus-wide exploration, we changed several functions from VIRTUS1.
 1. install cwltool
 
 ```
-pip install cwlref-runner
+pip install cwltool==3.1.20210922203925
 ```
 
 In detail, check out [the cwltool website](https://github.com/common-workflow-language/cwltool).
+(Tested version is cwltool==3.1.20210922203925. **The latest version may raise an error.**)
 
 2. Setup docker
 
