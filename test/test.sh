@@ -20,7 +20,7 @@ fi
 echo "null" > null.txt
 ls | grep -v -E 'test.sh' | grep -v -E 'ERR3240275' | grep -v -E 'SRR8315715' | xargs rm -r
 
-cwltool --rm-tmpdir ../workflow/createindex.cwl ../workflow/createindex.job.yaml
+cwltool  --tmp-outdir-prefix=${PWD}/tmp_cwl/ --tmpdir-prefix=${PWD}/tmp_cwl/ --rm-tmpdir ../workflow/createindex.cwl ../workflow/createindex.job.yaml
 
 cd ERR3240275
 if [[ ! -e ./ERR3240275_1.fastq.gz ]]; then
@@ -29,7 +29,7 @@ if [[ ! -e ./ERR3240275_1.fastq.gz ]]; then
   wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR324/005/ERR3240275/ERR3240275_1.fastq.gz
   wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR324/005/ERR3240275/ERR3240275_2.fastq.gz
 fi
-cwltool --rm-tmpdir ../../workflow/VIRTUS.PE.cwl ../../workflow/VIRTUS.PE.job.yaml
+cwltool --tmp-outdir-prefix=${PWD}/tmp_cwl/ --tmpdir-prefix=${PWD}/tmp_cwl/ --rm-tmpdir ../../workflow/VIRTUS.PE.cwl ../../workflow/VIRTUS.PE.job.yaml
 cd ..
 
 
@@ -40,7 +40,7 @@ if [[ ! -e ./SRR8315715_1.fastq.gz ]]; then
 # wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR831/005/SRR8315715/SRR8315715_1.fastq.gz
   wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR831/005/SRR8315715/SRR8315715_2.fastq.gz
 fi
-cwltool --rm-tmpdir ../../workflow/VIRTUS.SE.cwl ../../workflow/VIRTUS.SE.job.yaml
+cwltool --tmp-outdir-prefix=${PWD}/tmp_cwl/ --tmpdir-prefix=${PWD}/tmp_cwl/ --rm-tmpdir ../../workflow/VIRTUS.SE.cwl ../../workflow/VIRTUS.SE.job.yaml
 cd ..
 
 echo Successfully completed test.sh!
