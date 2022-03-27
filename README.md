@@ -367,7 +367,6 @@ cwltool --tmp-outdir-prefix=/home/yyasumizu/tmp_cwl/ \
 - STAR will require memory at least 30GB. Check your resources.
 - Some options instead of docker are available. Specify cwltool option `--user-space-docker-cmd=udocker`, `--singularity`. Increase a limited number by `ulimit -n 4096` (or more) may be required.
 - You can specify another host's reference URL such as the mouse in createindex steps, but note that virus references are designed for human viruses. We don't guarantee the result when you changed the reference species.
-- Temporary files are large. If VIRTUS2 stops suddenly, please examine the room of /tmp or specify another storage for temporary files using `--tmp-outdir-prefix` and `--tmpdir-prefix`. `--rm-tmpdir` is useful to save spaces.
 
 ## VIRTUS2 for single cell RNAseq
 
