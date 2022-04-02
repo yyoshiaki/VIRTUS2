@@ -379,8 +379,6 @@ cwltool --tmp-outdir-prefix=/home/yyasumizu/tmp_cwl/ \
 --fastq ../test/SRR8315715_2.fastq.gz \
 --genomeDir_human ../test/STAR_index_human \
 --genomeDir_virus ../test/STAR_index_virus \
---salmon_index_human ../test/salmon_index_human \
---salmon_quantdir_human salmon_human \
 --outFileNamePrefix_human human \
 --nthreads 40
 ```
