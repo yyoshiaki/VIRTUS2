@@ -399,7 +399,6 @@ bash test.sh
 ## cwl sources
 
 - [https://github.com/pitagora-network/DAT2-cwl](https://github.com/pitagora-network/DAT2-cwl/tree/develop) : most tools
-- [https://github.com/roryk/salmon-cwl](https://github.com/roryk/salmon-cwl) : salmon
 - [https://github.com/nigyta/bact_genome](https://github.com/nigyta/bact_genome) : fastp
 
 ## Contact
