@@ -404,6 +404,7 @@ bash test.sh
 ## Contact
 
 Yoshiaki Yasumizu ([yyasumizu@ifrec.osaka-u.ac.jp](yyasumizu@ifrec.osaka-u.ac.jp))
+Please use [issue](https://github.com/yyoshiaki/VIRTUS2/issues) first!
 
 ## Citation
 
