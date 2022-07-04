@@ -20,5 +20,5 @@ label: bam_filter_polyX
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'yyasumizu/bam_filter_polyx:1.2'
+    dockerPull: 'yyasumizu/bam_filter_polyx:1.3'
 stdout: virusAligned.filtered.sortedByCoord.out.bam
