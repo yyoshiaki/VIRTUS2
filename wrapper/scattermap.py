@@ -68,7 +68,7 @@ class _ScatterMapper(_HeatMapper):
 
         # Add row and column labels
         if isinstance(self.xticks, str) and self.xticks == "auto":
-            xticks, xticklabels = self._s(ax, self.xticklabels, 0)
+            xticks, xticklabels = self._auto_ticks(ax, self.xticklabels, 0)
         else:
             xticks, xticklabels = self.xticks, self.xticklabels
 
