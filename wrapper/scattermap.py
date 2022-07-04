@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 
-from seaborn.external.six import string_types
+# from seaborn.external.six import string_types
 
 from seaborn.utils import despine, axis_ticklabels_overlap, relative_luminance, to_utf8
 
@@ -67,12 +67,12 @@ class _ScatterMapper(_HeatMapper):
                 cb.solids.set_rasterized(True)
 
         # Add row and column labels
-        if isinstance(self.xticks, string_types) and self.xticks == "auto":
-            xticks, xticklabels = self._auto_ticks(ax, self.xticklabels, 0)
+        if isinstance(self.xticks, str) and self.xticks == "auto":
+            xticks, xticklabels = self._s(ax, self.xticklabels, 0)
         else:
             xticks, xticklabels = self.xticks, self.xticklabels
 
-        if isinstance(self.yticks, string_types) and self.yticks == "auto":
+        if isinstance(self.yticks, str) and self.yticks == "auto":
             yticks, yticklabels = self._auto_ticks(ax, self.yticklabels, 1)
         else:
             yticks, yticklabels = self.yticks, self.yticklabels
