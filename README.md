@@ -36,11 +36,11 @@ To focus on virus-wide exploration, we changed several functions from VIRTUS1.
 1. install cwltool
 
 ```
-pip install cwltool==3.1.20210922203925
+pip install cwltool
 ```
 
 In detail, check out [the cwltool website](https://github.com/common-workflow-language/cwltool).
-(Tested version is cwltool==3.1.20210922203925. **The latest version may raise an error.**)
+(Tested version is cwltool==3.1.20210922203925 and 3.1.20221008225030)
 
 2. Setup docker
 
