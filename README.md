@@ -27,7 +27,7 @@ To focus on virus-wide exploration, we changed several functions from VIRTUS1.
 ### dependencies
 
 - python3
-- cwltool `pip install cwltool==3.1.20210922203925` 
+- cwltool `pip install cwltool` 
 - docker (alternatively, you can use udocker, or singularity mode when you have no root privileges. See [Tips section](https://github.com/yyoshiaki/VIRTUS#tips).)
 - STAR requires about 37Gb RAM.
 
