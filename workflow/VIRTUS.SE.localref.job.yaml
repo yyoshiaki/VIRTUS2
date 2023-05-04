@@ -1,0 +1,13 @@
+fastq:
+  class: File
+  path: >-
+    ../test/SRR8315715/SRR8315715_2.fastq.gz
+genomeDir_human:
+  class: Directory
+  path: ../test/STAR_index_human_localref
+genomeDir_virus:
+  class: Directory
+  path: ../test/STAR_index_virus_localref
+nthreads: 40
+outFileNamePrefix_human: human
+filename_output: VIRTUS.localref.output.tsv

@@ -1,0 +1,11 @@
+dir_name_STAR_virus: STAR_index_virus_localref
+dir_name_STAR_human: STAR_index_human_localref
+runThreadN: 40
+f_virus:
+  class: File
+  path: >-
+    ../data/viruses.fasta
+f_human:
+  class: File
+  path: >- 
+    ../test/GRCh38.p13.genome.fa
