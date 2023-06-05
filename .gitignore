@@ -11,3 +11,4 @@ wrapper/*
 !wrapper/scattermap.py
 .vscode/settings.json
 ._.DS_Store
+.vscode/launch.json

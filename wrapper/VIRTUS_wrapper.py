@@ -195,8 +195,8 @@ df_rate = df_rate[df_rate.max(axis=1) > th_rate]
 
 list_index = (set(list(df_rate.index)) & set(list(df_cov.index)))
 
-df_cov = df_cov.loc[list_index]
-df_rate = df_rate.loc[list_index]
+df_cov = df_cov.reindex(list_index)
+df_rate = df_rate.reindex(list_index)
 
 df_cov = df_cov[df_rate.columns]
 
