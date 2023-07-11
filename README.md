@@ -396,6 +396,14 @@ cd test
 bash test.sh
 ```
 
+## Tool versions
+
+- samtools: 1.15
+- bedtools: 2.29.2
+- complexity: v0.3.6
+- fastp: 0.20.0
+- STAR: 2.7.1a
+
 ## cwl sources
 
 - [https://github.com/pitagora-network/DAT2-cwl](https://github.com/pitagora-network/DAT2-cwl/tree/develop) : most tools
