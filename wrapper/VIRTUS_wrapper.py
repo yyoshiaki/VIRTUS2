@@ -34,6 +34,7 @@ parser.add_argument('--fastq', action = 'store_true')
 parser.add_argument('--figsize', default = '8,3', help='(default:8,3)')
 parser.add_argument('--th_cov', default = '10', help='threshold of max viral coverage to plot, test (default:10)')
 parser.add_argument('--th_rate', default = '0.0001', help='threshold of max rate virus/human to plot, test (default:0.0001)')
+parser.add_argument('--singularity', action = 'store_true', help='run with singularity (default:False)')
 
 args = parser.parse_args()
 
@@ -52,6 +53,11 @@ try:
         raise ValueError('not found VIRTUS.PE.cwl or VIRTUS.SE.cwl')
 except (ValueError, IndexError):
     exit('invalid path to VIRTUS. try to change --VIRTUSDir to the absolute path.')
+
+if args.singularity:
+    singularity = ' --singularity'
+else:
+    singularity = ''
 
 # %%
 list_df_res = []
@@ -118,6 +124,7 @@ for index, item in df.iterrows():
     if item["Layout"] =="PE":
         VIRTUS_cmd = " ".join([
             "cwltool",
+            singularity,
             "--rm-tmpdir",
             os.path.join(dir_VIRTUS, "VIRTUS.PE.cwl"), 
             "--fastq1", '../'+fastq1,
@@ -131,6 +138,7 @@ for index, item in df.iterrows():
     elif item["Layout"] =="SE":
         VIRTUS_cmd = " ".join([
             "cwltool",
+            singularity,
             "--rm-tmpdir",
             os.path.join(dir_VIRTUS, "VIRTUS.SE.cwl"), 
             "--fastq", '../'+fastq,
