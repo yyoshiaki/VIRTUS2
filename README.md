@@ -318,6 +318,7 @@ usage: VIRTUS_wrapper.py [-h] \
                         [--fastq] \
                         [--figsize FIGSIZE] \
                         [--th_cov TH_COV] [--th_rate TH_RATE] \
+                        [--singularity] \
                         input_path
 
 positional arguments:
@@ -337,6 +338,7 @@ optional arguments:
   --figsize FIGSIZE     (default:6,6)
   --th_cov TH_COV       threshold of max viral coverage to plot, test (default:10)
   --th_rate TH_RATE     threshold of max rate virus/human to plot, test (default:0.0001)
+  --singularity         run with singularity (default:False)
 ```
 example
 ```
