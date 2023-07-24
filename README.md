@@ -1,4 +1,4 @@
-# VIRTUS2 : VIRal Transcript Usage Sensor v2.0.1 <img src="https://github.com/yyoshiaki/VIRTUS/raw/master/img/VIRTUS.jpg" width="20%" align="right" />
+# VIRTUS2 : VIRal Transcript Usage Sensor v2.0.2 <img src="https://github.com/yyoshiaki/VIRTUS/raw/master/img/VIRTUS.jpg" width="20%" align="right" />
 
 **!!Note : We updated VIRTUS to version2. In this version, we removed the gene quantification step by Salmon and single virus mode, and added coverage on viral genomes to the result to focus on virus-wide exploration. If you want to use the single virus mode, visit [https://github.com/yyoshiaki/VIRTUS](https://github.com/yyoshiaki/VIRTUS)**
 
@@ -318,6 +318,7 @@ usage: VIRTUS_wrapper.py [-h] \
                         [--fastq] \
                         [--figsize FIGSIZE] \
                         [--th_cov TH_COV] [--th_rate TH_RATE] \
+                        [--singularity] \
                         input_path
 
 positional arguments:
@@ -337,6 +338,7 @@ optional arguments:
   --figsize FIGSIZE     (default:6,6)
   --th_cov TH_COV       threshold of max viral coverage to plot, test (default:10)
   --th_rate TH_RATE     threshold of max rate virus/human to plot, test (default:0.0001)
+  --singularity         run with singularity (default:False)
 ```
 example
 ```
